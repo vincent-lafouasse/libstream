@@ -53,4 +53,4 @@ ReadStatus reader_takeFourCC(Reader* reader, uint8_t* out)
     return reader_skip(reader, 4);
 }
 
-#include "generatedImplementation.c"
+#include "readNumber.c"
