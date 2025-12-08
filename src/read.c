@@ -53,47 +53,4 @@ ReadStatus reader_takeFourCC(Reader* reader, uint8_t* out)
     return reader_skip(reader, 4);
 }
 
-ReadStatus reader_takeU16_LE(Reader* reader, uint16_t* out)
-{
-    Slice slice;
-    TRY(reader_peekSlice(reader, 2, &slice));
-
-    *out = bitcastU16_LE(slice.slice);
-    return reader_skip(reader, 2);
-}
-
-ReadStatus reader_takeI16_LE(Reader* reader, int16_t* out)
-{
-    Slice slice;
-    TRY(reader_peekSlice(reader, 2, &slice));
-
-    *out = bitcastI16_LE(slice.slice);
-    return reader_skip(reader, 2);
-}
-
-ReadStatus reader_takeU32_LE(Reader* reader, uint32_t* out)
-{
-    Slice slice;
-    TRY(reader_peekSlice(reader, 4, &slice));
-
-    *out = bitcastU32_LE(slice.slice);
-    return reader_skip(reader, 4);
-}
-
-ReadStatus reader_takeI32_LE(Reader* reader, int32_t* out)
-{
-    Slice slice;
-    TRY(reader_peekSlice(reader, 4, &slice));
-
-    *out = bitcastI32_LE(slice.slice);
-    return reader_skip(reader, 4);
-}
-
-ReadStatus reader_takeI24_LE(Reader* reader, int32_t* out)
-{
-    Slice slice;
-    TRY(reader_peekSlice(reader, 3, &slice));
-
-    *out = bitcastI24_LE(slice.slice);
-    return reader_skip(reader, 3);
-}
+#include "generatedImplementation.c"
