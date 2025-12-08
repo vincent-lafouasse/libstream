@@ -1,3 +1,5 @@
+/* vim: set filetype=c : */
+
 ReadStatus reader_peekU16_LE(Reader* reader, uint16_t* out)
 {
     Slice slice;
