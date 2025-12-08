@@ -34,8 +34,7 @@ if __name__ == "__main__":
     modes = ["peek", "take"]
     signedness = ["signed", "unsigned"]
 
-    implement_read_integer(16, "LE", "peek", "signed")
-    implement_read_integer(64, "BE", "take", "unsigned")
-
-    # for bitdepth, endian, mode in itertools.product(bitdepths, endianness, modes):
-    #    implement_read_unsigned(bitdepth, endian, mode)
+    for bitdepth, endian, mode, sign in itertools.product(
+        bitdepths, endianness, modes, signedness
+    ):
+        implement_read_integer(bitdepth, endian, mode, sign)
