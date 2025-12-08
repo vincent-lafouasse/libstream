@@ -19,6 +19,10 @@ def implement_read_integer(mode, shortType, containerType, size, endian):
     print("")
 
 
+def declare_read_integer(mode, shortType, containerType, size, endian):
+    functionName = f"reader_{mode}{shortType}_{endian}"
+    print(f"ReadStatus {functionName}(Reader* reader, {containerType}* out);")
+
 if __name__ == "__main__":
     bitdepths = [16, 32, 64]
     signedness = [("U", "uint"), ("I", "int")]
@@ -42,4 +46,5 @@ if __name__ == "__main__":
     signedness = ["signed", "unsigned"]
 
     for T, endian, mode in itertools.product(types, endianness, modes):
-        implement_read_integer(mode, T[0], T[1], T[2], endian)
+        # implement_read_integer(mode, T[0], T[1], T[2], endian)
+        declare_read_integer(mode, T[0], T[1], T[2], endian)
