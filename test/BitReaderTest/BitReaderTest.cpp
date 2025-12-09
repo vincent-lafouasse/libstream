@@ -189,17 +189,60 @@ TEST(BitReader, TakeBits_SingleBit)
 
 TEST(BitReader, TakeBits_ExactlyOneByte)
 {
-    // Arrange: Stream 0xAB 0xCD. Start aligned.
-    MockReader mockReader("\xAB\xCD"); 
+    MockReader mockReader("\xAB\xCD");
     Reader reader = mockReaderInterface(&mockReader);
     BitReader br = bitreader_init(&reader);
     uint32_t result;
 
-    // Act: Read 8 bits
     ASSERT_IS_OK(bitreader_takeBits(&br, 8, &result));
 
-    // Assert: Result = 0xAB. State must be aligned.
     ASSERT_EQ(result, 0xABu);
     ASSERT_EQ(br.subOffset, 0u);
     ASSERT_EQ(bitreader_getByteOffset(&br), 1u);
+    ASSERT_TRUE(bitreader_isByteAligned(&br));
+}
+
+TEST(BitReader, TakeBits_AcrossBoundary_FragmentOnly)
+{
+    // 0xAA (10101010) 0xBB (10111011)
+    MockReader mockReader("\xAA\xBB");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    // Put into unaligned state: Read 5 bits (10101). subOffset=5, ByteOffset=1.
+    // Remaining in 0xAA: 010 (3 bits).
+    ASSERT_IS_OK(bitreader_takeBits(&br, 5, &result));
+    ASSERT_EQ(result, 0b10101u);
+
+    // Read 5 more bits. Should take 3 from 0xAA, then 2 from 0xBB (Total 5).
+    // Expected result: 010 | 10 = 0b01010
+    ASSERT_IS_OK(bitreader_takeBits(&br, 5, &result));
+
+    ASSERT_EQ(result, 0b01010u);
+    ASSERT_EQ(br.subOffset, 2u);  // 2 bits consumed from 0xBB
+    ASSERT_EQ(bitreader_getByteOffset(&br),
+              2u);  // 0xBB is now the current byte
+}
+
+TEST(BitReader, TakeBits_AcrossBoundary_8BitsTotal)
+{
+    // Stream 0xAA 0xBB. Read 4 bits (1010). subOffset=4, ByteOffset=1.
+    // Remaining in 0xAA: 1010 (4 bits).
+    MockReader mockReader("\xAA\xBB");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    ASSERT_IS_OK(bitreader_takeBits(&br, 4, &result));
+    ASSERT_EQ(br.subOffset, 4u);
+
+    // Read 8 bits. Should take 4 from 0xAA and 4 from 0xBB.
+    // 0xAA fragment: 1010. 0xBB fragment: 1011.
+    // Expected: 1010 | 1011 = 0b10101011
+    ASSERT_IS_OK(bitreader_takeBits(&br, 8, &result));
+
+    ASSERT_EQ(result, 0b10101011u);
+    ASSERT_EQ(br.subOffset, 4u);  // 4 bits consumed from 0xBB
+    ASSERT_EQ(bitreader_getByteOffset(&br), 2u);
 }
