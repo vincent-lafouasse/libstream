@@ -25,7 +25,7 @@ typedef struct BitReader {
 BitReader bitreader_init(Reader* reader);
 
 // --- core read functions
-// yes the u32 is wasteful but i'm trying uniformity
+// yes the u32 is wasteful but i'm going for uniformity
 LibStream_ReadStatus bitreader_takeSingleBit(BitReader* br, uint32_t* out);
 LibStream_ReadStatus bitreader_takeBits(BitReader* br,
                                         size_t nBits,
