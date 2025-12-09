@@ -170,3 +170,36 @@ TEST(BitReader, SkipBytes_UnalignedStart)
     ASSERT_EQ(bit, 1u);
     ASSERT_EQ(reader_offset(&reader), 4u);  // 4th byte has been read
 }
+
+TEST(BitReader, TakeBits_SingleBit)
+{
+    // 0b10101010
+    MockReader mockReader("\xAA");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    // read MSB (1)
+    ASSERT_IS_OK(bitreader_takeBits(&br, 1, &result));
+
+    ASSERT_EQ(result, 1u);
+    ASSERT_EQ(br.subOffset, 1u);
+    ASSERT_EQ(bitreader_getByteOffset(&br), 1u);
+}
+
+TEST(BitReader, TakeBits_ExactlyOneByte)
+{
+    // Arrange: Stream 0xAB 0xCD. Start aligned.
+    MockReader mockReader("\xAB\xCD"); 
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    // Act: Read 8 bits
+    ASSERT_IS_OK(bitreader_takeBits(&br, 8, &result));
+
+    // Assert: Result = 0xAB. State must be aligned.
+    ASSERT_EQ(result, 0xABu);
+    ASSERT_EQ(br.subOffset, 0u);
+    ASSERT_EQ(bitreader_getByteOffset(&br), 1u);
+}
