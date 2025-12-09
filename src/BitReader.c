@@ -20,7 +20,7 @@ BitReader bitreader_init(Reader* reader)
     return (BitReader){.byteReader = reader, .subOffset = 0};
 }
 
-LibStream_ReadStatus bitreader_readBit(BitReader* br, uint32_t* out)
+LibStream_ReadStatus bitreader_takeBit(BitReader* br, uint32_t* out)
 {
     if (br->subOffset == 0) {
         TRY(reader_peekInto(br->byteReader, 1, &br->currentByte));
