@@ -17,7 +17,7 @@ static uint8_t getNthBit_BE(uint8_t byte, uint8_t offset)
 
 BitReader bitreader_init(Reader* reader)
 {
-    return (BitReader){.byteReader = reader, .offset = 0, .subOffset = 0};
+    return (BitReader){.byteReader = reader, .subOffset = 0};
 }
 
 LibStream_ReadStatus bitreader_readBit(BitReader* br, uint32_t* out)
@@ -31,7 +31,6 @@ LibStream_ReadStatus bitreader_readBit(BitReader* br, uint32_t* out)
     *out = (bit != 0);
     if (br->subOffset == 7) {
         br->subOffset = 0;
-        br->offset += 1;
     } else {
         br->subOffset += 1;
     }

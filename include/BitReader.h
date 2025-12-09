@@ -17,7 +17,6 @@ extern "C" {
 // a sub-offset of 0 means the next byte is across the byte boundary and will trigger a read
 typedef struct BitReader {
     Reader* byteReader;
-    size_t offset;
     size_t subOffset;  // N. of bits already consumed from current_byte (0-7).
     uint8_t currentByte;
 } BitReader;
