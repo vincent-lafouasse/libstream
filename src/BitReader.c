@@ -37,3 +37,37 @@ LibStream_ReadStatus bitreader_takeSingleBit(BitReader* br, uint32_t* out)
     *out = (bit != 0);
     return LibStream_ReadStatus_Ok;
 }
+
+bool bitreader_isByteAligned(const BitReader* br)
+{
+    return br->subOffset == 0;
+}
+
+// returns n. of bits skipped
+size_t bitreader_byteAlign(BitReader* br)
+{
+    if (bitreader_isByteAligned(br)) {
+        return 0;
+    }
+
+    const size_t skipped = 8 - br->subOffset;
+    br->subOffset = 0;
+    return skipped;
+}
+
+// skipBytes always starts by aligning
+LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes)
+{
+    bitreader_byteAlign(br);
+    return reader_skip(br->byteReader, nBytes);
+}
+
+uint64_t bitreader_getBitOffset(const BitReader* br)
+{
+    return br->subOffset;
+}
+
+uint64_t bitreader_getByteOffset(const BitReader* br)
+{
+    return reader_offset(br->byteReader);
+}
