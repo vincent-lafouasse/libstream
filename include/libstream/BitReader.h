@@ -28,12 +28,12 @@ BitReader bitreader_init(Reader* reader);
 // yes the u32 is wasteful but i'm trying uniformity
 LibStream_ReadStatus bitreader_takeSingleBit(BitReader* br, uint32_t* out);
 LibStream_ReadStatus bitreader_takeBits(BitReader* br,
-                                         size_t nBits,
-                                         uint32_t* out);
+                                        size_t nBits,
+                                        uint32_t* out);
 LibStream_ReadStatus bitreader_peekSingleBit(BitReader* br, uint32_t* out);
 LibStream_ReadStatus bitreader_peekBits(BitReader* br,
-                                         size_t nBits,
-                                         uint32_t* out);
+                                        size_t nBits,
+                                        uint32_t* out);
 
 // --- navigation/alignment
 bool bitreader_isByteAligned(const BitReader* br);
