@@ -9,36 +9,33 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if(NOT TARGET bitcast)
-    message(STATUS "---- No libbitcast here or in parent project: fetching libbitcast")
+  message(
+    STATUS "---- No libbitcast here or in parent project: fetching libbitcast")
 
-    include(FetchContent)
-    FetchContent_Declare(
-        bitcast_dep
-        GIT_REPOSITORY  https://github.com/vincent-lafouasse/libbitcast.git
-        GIT_TAG         "main"
-        GIT_SHALLOW     1
-    )
-    FetchContent_MakeAvailable(bitcast_dep)
+  include(FetchContent)
+  FetchContent_Declare(
+    bitcast_dep
+    GIT_REPOSITORY https://github.com/vincent-lafouasse/libbitcast.git
+    GIT_TAG "main"
+    GIT_SHALLOW 1)
+  FetchContent_MakeAvailable(bitcast_dep)
 else()
-    message(STATUS "---- Found libbitcast in parent project: no fetching")
+  message(STATUS "---- Found libbitcast in parent project: no fetching")
 endif()
 
 add_library(${PROJECT_NAME})
-target_sources(${PROJECT_NAME}
-PRIVATE
-    src/read.c
-
-PUBLIC
-    FILE_SET myHeaders
-    TYPE HEADERS
-    BASE_DIRS
-        include
-    FILES
-        include/Reader.h
-)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    bitcast
-)
+target_sources(
+  ${PROJECT_NAME}
+  PRIVATE src/read.c
+  PUBLIC FILE_SET
+         myHeaders
+         TYPE
+         HEADERS
+         BASE_DIRS
+         include
+         FILES
+         include/Reader.h)
+target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
 include(FetchContent)
 include(cmake/fetch_gtest.cmake)
@@ -47,9 +44,5 @@ add_subdirectory(test)
 include(CTest)
 enable_testing()
 
-add_test(NAME ReaderTest
-    COMMAND ReaderTest
-)
-set_tests_properties(ReaderTest PROPERTIES
-    DEPENDS bitcastTest
-)
+add_test(NAME ReaderTest COMMAND ReaderTest)
+set_tests_properties(ReaderTest PROPERTIES DEPENDS bitcastTest)
