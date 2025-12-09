@@ -52,5 +52,6 @@ if(LIBSTREAM_BUILD_TESTS)
   include(CTest)
   enable_testing()
 
-  add_subdirectory(test)
+  add_subdirectory(test/ReaderTest)
+  add_subdirectory(test/BitReaderTest)
 endif()
