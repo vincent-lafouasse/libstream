@@ -16,7 +16,7 @@ static void assertSliceEq(const Slice& slice, const std::string& expected)
 #define ASSERT_IS_EOF(status) \
     ASSERT_EQ(status, LibStream_ReadStatus_UnexpectedEOF)
 
-TEST(MockReaderReader, PeekSlice_Basic)
+TEST(Reader, PeekSlice_Basic)
 {
     MockReader mockReader("1234567");
     Reader reader = mockReaderInterface(&mockReader);
@@ -47,7 +47,7 @@ TEST(MockReaderReader, PeekSlice_Basic)
     ASSERT_IS_EOF(reader.peekSlice(&reader, 8, &slice));
 }
 
-TEST(MockReaderReader, Skip_Basic)
+TEST(Reader, Skip_Basic)
 {
     MockReader mockReader("ABCDEFG");
     Reader reader = mockReaderInterface(&mockReader);
@@ -67,7 +67,7 @@ TEST(MockReaderReader, Skip_Basic)
     ASSERT_IS_EOF(reader.skip(&reader, 1));
 }
 
-TEST(MockReaderReader, Skip_Then_Peek)
+TEST(Reader, Skip_Then_Peek)
 {
     MockReader mockReader("0123456789");
     Reader reader = mockReaderInterface(&mockReader);
@@ -89,7 +89,7 @@ TEST(MockReaderReader, Skip_Then_Peek)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, ZeroLength_Peeks)
+TEST(Reader, ZeroLength_Peeks)
 {
     MockReader mockReader("xyz");
     Reader reader = mockReaderInterface(&mockReader);
@@ -99,7 +99,7 @@ TEST(MockReaderReader, ZeroLength_Peeks)
     ASSERT_EQ(slice.len, 0u);
 }
 
-TEST(MockReaderReader, EOF_PeekSlice_Exact)
+TEST(Reader, EOF_PeekSlice_Exact)
 {
     MockReader mockReader("hi");
     Reader reader = mockReaderInterface(&mockReader);
@@ -112,7 +112,7 @@ TEST(MockReaderReader, EOF_PeekSlice_Exact)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, PeekSlice_AfterEOFOffset)
+TEST(Reader, PeekSlice_AfterEOFOffset)
 {
     MockReader mockReader("aaa");
     Reader reader = mockReaderInterface(&mockReader);
@@ -125,7 +125,7 @@ TEST(MockReaderReader, PeekSlice_AfterEOFOffset)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, MixedOperations_Consistency)
+TEST(Reader, MixedOperations_Consistency)
 {
     MockReader mockReader("abcdefghij");
     Reader reader = mockReaderInterface(&mockReader);
@@ -155,7 +155,7 @@ TEST(MockReaderReader, MixedOperations_Consistency)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, PeekSlice_SingleByteAdvances)
+TEST(Reader, PeekSlice_SingleByteAdvances)
 {
     MockReader mem("ABCDEFGH");
     Reader r = mockReaderInterface(&mem);
@@ -175,7 +175,7 @@ TEST(MockReaderReader, PeekSlice_SingleByteAdvances)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, OffsetMonotonicity_PeekDoesNotAdvance)
+TEST(Reader, OffsetMonotonicity_PeekDoesNotAdvance)
 {
     MockReader mem("0123456789");
     Reader r = mockReaderInterface(&mem);
@@ -200,7 +200,7 @@ TEST(MockReaderReader, OffsetMonotonicity_PeekDoesNotAdvance)
     }
 }
 
-TEST(MockReaderReader, RepeatedEOFPeek)
+TEST(Reader, RepeatedEOFPeek)
 {
     MockReader mem("xyz");
     Reader r = mockReaderInterface(&mem);
@@ -215,7 +215,7 @@ TEST(MockReaderReader, RepeatedEOFPeek)
     }
 }
 
-TEST(MockReaderReader, ExhaustiveByteWalk)
+TEST(Reader, ExhaustiveByteWalk)
 {
     const char* data = "abcdefghijklmnop";
     MockReader mem(data);
@@ -237,7 +237,7 @@ TEST(MockReaderReader, ExhaustiveByteWalk)
     ASSERT_IS_EOF(r.peekSlice(&r, 1, &slice));
 }
 
-TEST(MockReaderReader, SlidingWindows)
+TEST(Reader, SlidingWindows)
 {
     const char* data = "0123456789";
     MockReader mem(data);
@@ -265,7 +265,7 @@ TEST(MockReaderReader, SlidingWindows)
     }
 }
 
-TEST(MockReaderReader, SliceStabilityAcrossPeeks)
+TEST(Reader, SliceStabilityAcrossPeeks)
 {
     MockReader mem("ABCDE");
     Reader r = mockReaderInterface(&mem);
@@ -284,7 +284,7 @@ TEST(MockReaderReader, SliceStabilityAcrossPeeks)
     ASSERT_EQ(r.offset, 0u);
 }
 
-TEST(MockReaderReader, SkipToLastByte)
+TEST(Reader, SkipToLastByte)
 {
     MockReader mem("Z123");
     Reader r = mockReaderInterface(&mem);
@@ -300,7 +300,7 @@ TEST(MockReaderReader, SkipToLastByte)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, LargePeekRequest)
+TEST(Reader, LargePeekRequest)
 {
     MockReader mem("short");
     Reader r = mockReaderInterface(&mem);
@@ -310,7 +310,7 @@ TEST(MockReaderReader, LargePeekRequest)
     ASSERT_IS_EOF(err);
 }
 
-TEST(MockReaderReader, SkipExhaustively)
+TEST(Reader, SkipExhaustively)
 {
     MockReader mem("aaa");
     Reader r = mockReaderInterface(&mem);
@@ -324,7 +324,7 @@ TEST(MockReaderReader, SkipExhaustively)
     }
 }
 
-TEST(MockReaderReader, ComplexSkipPattern)
+TEST(Reader, ComplexSkipPattern)
 {
     const char* data = "abcdefghijklmnopqrstuv";
     MockReader mem(data);
