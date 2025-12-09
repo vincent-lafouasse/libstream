@@ -8,6 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+option(LIBSTREAM_BUILD_TESTS "Build and run tests using CTest" ON)
+
 if(NOT TARGET bitcast)
   message(
     STATUS "---- No libbitcast here or in parent project: fetching libbitcast")
@@ -37,10 +39,12 @@ target_sources(
          include/Reader.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
-include(FetchContent)
-include(cmake/fetch_gtest.cmake)
+if(LIBSTREAM_BUILD_TESTS)
+  include(FetchContent)
+  include(cmake/fetch_gtest.cmake)
 
-include(CTest)
-enable_testing()
+  include(CTest)
+  enable_testing()
 
-add_subdirectory(test)
+  add_subdirectory(test)
+endif()
