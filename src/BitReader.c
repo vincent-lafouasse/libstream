@@ -72,6 +72,8 @@ LibStream_ReadStatus bitreader_takeBits(BitReader* br,
                                         size_t nBits,
                                         uint32_t* out)
 {
+    // this implementation is technically inefficient
+    // but not enough for me to care
     uint32_t bit;
     *out = 0;
 
