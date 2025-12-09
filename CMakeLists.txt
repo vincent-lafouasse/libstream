@@ -50,3 +50,6 @@ enable_testing()
 add_test(NAME ReaderTest
     COMMAND ReaderTest
 )
+set_tests_properties(ReaderTest PROPERTIES
+    DEPENDS bitcastTest
+)
