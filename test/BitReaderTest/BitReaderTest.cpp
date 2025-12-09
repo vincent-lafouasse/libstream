@@ -246,3 +246,85 @@ TEST(BitReader, TakeBits_AcrossBoundary_8BitsTotal)
     ASSERT_EQ(br.subOffset, 4u);  // 4 bits consumed from 0xBB
     ASSERT_EQ(bitreader_getByteOffset(&br), 2u);
 }
+
+TEST(BitReader, TakeBits_AllThreePhases)
+{
+    // 0xFF 0x11 0x22 0x33 0x44
+    // 0b1111'1111  0xff
+    // 0b0001'0001  0x11
+    // 0b0010'0010  0x22
+    // 0b0011'0011  0x33
+    // 0b0100'0100  0x44
+    MockReader mockReader("\xFF\x11\x22\x33\x44");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    // 1. Put into unaligned state: Read 3 bits (111). subOffset=3,
+    // ByteOffset=1. Remaining in 0xFF: 5 bits (11111).
+    // 0b___1'1111  0xff
+    // 0b0001'0001  0x11
+    // 0b0010'0010  0x22
+    // 0b0011'0011  0x33
+    // 0b0100'0100  0x44
+    ASSERT_IS_OK(bitreader_takeBits(&br, 3, &result));
+    ASSERT_EQ(result, 0b111u);
+
+    // 2. read 24 bits from the stream so those bits
+    // 0b___1'1111  0xff
+    // 0b0001'0001  0x11
+    // 0b0010'0010  0x22
+    // 0b001_'____  0x33
+    // 0b____'____  0x44
+    ASSERT_IS_OK(bitreader_takeBits(&br, 24, &result));
+    ASSERT_EQ(result, 0b11111'00010001'00100010'001u);
+    // now remains
+    // 0b____'____  0xff
+    // 0b____'____  0x11
+    // 0b____'____  0x22
+    // 0b___1'0011  0x33
+    // 0b0100'0100  0x44
+
+    // 3. read 2 bits bc why not
+    ASSERT_IS_OK(bitreader_takeBits(&br, 2, &result));
+    ASSERT_EQ(result, 0b10u);
+    // now remains
+    // 0b____'____  0xff
+    // 0b____'____  0x11
+    // 0b____'____  0x22
+    // 0b____'_011  0x33
+    // 0b0100'0100  0x44
+
+    // 3. read 9 bits bc why not
+    ASSERT_IS_OK(bitreader_takeBits(&br, 9, &result));
+    ASSERT_EQ(result, 0b011'0100'01u);
+    // now remains
+    // 0b____'____  0xff
+    // 0b____'____  0x11
+    // 0b____'____  0x22
+    // 0b____'____  0x33
+    // 0b____'__00  0x44
+
+    // 4. empty out the stream
+    ASSERT_IS_OK(bitreader_takeBits(&br, 2, &result));
+    ASSERT_EQ(result, 0u);
+
+    // 5. done
+    ASSERT_IS_EOF(bitreader_takeBits(&br, 1, &result));
+}
+
+TEST(BitReader, TakeBits_FullBytes_NoFragments)
+{
+    // Stream 0x12 0x34 0x56 0x78. Start aligned.
+    MockReader mockReader("\x12\x34\x56\x78");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t result;
+
+    // Read 24 bits (3 full bytes)
+    ASSERT_IS_OK(bitreader_takeBits(&br, 24, &result));
+
+    ASSERT_EQ(result, 0x123456u);
+    ASSERT_EQ(br.subOffset, 0u);
+    ASSERT_EQ(bitreader_getByteOffset(&br), 3u);  // 3 bytes taken
+}
