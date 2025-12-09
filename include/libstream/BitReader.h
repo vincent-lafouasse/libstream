@@ -43,8 +43,7 @@ LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes);
 
 // returns the _total_ bit offset
 uint64_t bitreader_getBitOffset(const BitReader* br);
-// returns the offset of the next unread byte
-// if byte aligned, it's the byte right under the head, else it's the next
+// returns the n. of bytes consumed from the internal reader
 uint64_t bitreader_getByteOffset(const BitReader* br);
 
 #ifdef __cplusplus
