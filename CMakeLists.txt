@@ -36,7 +36,10 @@ target_sources(
          BASE_DIRS
          include
          FILES
-         include/Reader.h)
+         include/libstream.h
+         include/libstream/Reader.h
+         include/libstream/Reader.h
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic

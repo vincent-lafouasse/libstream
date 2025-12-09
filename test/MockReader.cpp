@@ -1,7 +1,6 @@
 #include "MockReader.hpp"
 
 #include <cstring>
-#include "Reader.h"
 
 MockReader::MockReader(const std::vector<Byte>& v) : data(v), pos(0) {}
 
