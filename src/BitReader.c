@@ -64,7 +64,7 @@ LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes)
 
 uint64_t bitreader_getBitOffset(const BitReader* br)
 {
-    return br->subOffset;
+    return br->subOffset + 8 * reader_offset(br->byteReader);
 }
 
 uint64_t bitreader_getByteOffset(const BitReader* br)
