@@ -6,3 +6,4 @@ cPlayer
 *.asd
 Makefile
 cmake-build/
+idea-build/
