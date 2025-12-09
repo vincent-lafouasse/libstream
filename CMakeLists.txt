@@ -47,6 +47,6 @@ add_subdirectory(test)
 include(CTest)
 enable_testing()
 
-add_test(NAME bitcastTest
-    COMMAND bitcastTest
+add_test(NAME ReaderTest
+    COMMAND ReaderTest
 )
