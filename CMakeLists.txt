@@ -28,7 +28,7 @@ endif()
 add_library(${PROJECT_NAME})
 target_sources(
   ${PROJECT_NAME}
-  PRIVATE src/read.c
+  PRIVATE src/Reader.c
   PUBLIC FILE_SET
          myHeaders
          TYPE
