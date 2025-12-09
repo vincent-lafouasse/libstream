@@ -39,10 +39,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
 include(FetchContent)
 include(cmake/fetch_gtest.cmake)
-add_subdirectory(test)
 
 include(CTest)
 enable_testing()
 
-add_test(NAME ReaderTest COMMAND ReaderTest)
-set_tests_properties(ReaderTest PROPERTIES DEPENDS bitcastTest)
+add_subdirectory(test)
