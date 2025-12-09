@@ -26,11 +26,11 @@ BitReader bitreader_init(Reader* reader);
 
 // --- core read functions
 // yes the u32 is wasteful but i'm trying uniformity
-LibStream_ReadStatus bitreader_takeBit(BitReader* br, uint32_t* out);
+LibStream_ReadStatus bitreader_takeSingleBit(BitReader* br, uint32_t* out);
 LibStream_ReadStatus bitreader_takeBits(BitReader* br,
                                          size_t nBits,
                                          uint32_t* out);
-LibStream_ReadStatus bitreader_peekBit(BitReader* br, uint32_t* out);
+LibStream_ReadStatus bitreader_peekSingleBit(BitReader* br, uint32_t* out);
 LibStream_ReadStatus bitreader_peekBits(BitReader* br,
                                          size_t nBits,
                                          uint32_t* out);
