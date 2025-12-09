@@ -1,4 +1,5 @@
 #include "libstream/BitReader.h"
+#include "libstream/Reader.h"
 
 #define TRY(canFail)                          \
     do {                                      \
@@ -64,7 +65,12 @@ LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes)
 
 uint64_t bitreader_getBitOffset(const BitReader* br)
 {
-    return br->subOffset + 8 * reader_offset(br->byteReader);
+    if (reader_offset(br->byteReader) == 0) {
+        // nothing taken from the internal reader yet
+        return 0;
+    }
+    // at least one byte has been taken
+    return br->subOffset + 8 * (reader_offset(br->byteReader) - 1);
 }
 
 uint64_t bitreader_getByteOffset(const BitReader* br)
