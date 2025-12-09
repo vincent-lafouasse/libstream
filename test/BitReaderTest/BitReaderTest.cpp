@@ -29,17 +29,81 @@ TEST(BitReader, IsByteAligned_Correctness)
     BitReader br = bitreader_init(&reader);
     uint32_t bit;
 
-    // Initially Aligned
     ASSERT_TRUE(bitreader_isByteAligned(&br));
 
-    // Consume 1 bit -> Unaligned (subOffset = 1)
     bitreader_takeSingleBit(&br, &bit);
     ASSERT_FALSE(bitreader_isByteAligned(&br));
     ASSERT_EQ(br.subOffset, 1u);
 
-    // Consume 7 more bits (total 8) -> Aligned (subOffset = 0)
     for (int i = 0; i < 7; ++i) {
         bitreader_takeSingleBit(&br, &bit);
     }
     ASSERT_TRUE(bitreader_isByteAligned(&br));
+
+    // we read the entire buffer (1 byte)
+    ASSERT_IS_EOF(bitreader_takeSingleBit(&br, &bit));
+}
+
+TEST(BitReader, TakeSingleBit_BitExtractionAndSubOffset)
+{
+    //  0xAA = 0b10101010
+    MockReader mockReader("\xAA");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t bit;
+
+    // Initial state
+    ASSERT_EQ(br.subOffset, 0u);
+    ASSERT_EQ(reader_offset(&reader), 0u);
+
+    // --- MSB:   1 ---
+    ASSERT_IS_OK(bitreader_takeSingleBit(&br, &bit));
+    ASSERT_EQ(bit, 1u);
+    ASSERT_EQ(br.subOffset, 1u);
+    ASSERT_EQ(reader_offset(&reader), 1u);  // Byte taken, offset advanced
+
+    // --- bit 2: 0 ---
+    ASSERT_IS_OK(bitreader_takeSingleBit(&br, &bit));
+    ASSERT_EQ(bit, 0u);
+    ASSERT_EQ(br.subOffset, 2u);
+    ASSERT_EQ(reader_offset(&reader), 1u);  // still on same byte
+
+    // --- bit 7: 1 ---
+    for (int i = 0; i < 4; ++i) {  // Skip bits 3-6
+        bitreader_takeSingleBit(&br, &bit);
+    }
+    ASSERT_IS_OK(
+        bitreader_takeSingleBit(&br, &bit));  // Bit 7 (index 6 in currentByte)
+    ASSERT_EQ(bit, 1u);
+    ASSERT_EQ(br.subOffset, 7u);
+    ASSERT_EQ(reader_offset(&reader), 1u);
+
+    // --- Read 8th Bit (0) - Boundary Condition ---
+    ASSERT_IS_OK(bitreader_takeSingleBit(&br, &bit));
+    ASSERT_EQ(bit, 0u);
+    ASSERT_EQ(br.subOffset, 0u);  // SubOffset resets
+    ASSERT_EQ(reader_offset(&reader), 1u);
+    // Reader offset remains at 1, no second read
+}
+
+TEST(BitReader, TakeSingleBit_LoadNextByte)
+{
+    MockReader mockReader("\xAA\xFF");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t bit;
+
+    // Consume first 8 bits (to put br.subOffset=0 and reader_offset=1)
+    for (int i = 0; i < 8; ++i) {
+        bitreader_takeSingleBit(&br, &bit);
+    }
+    ASSERT_EQ(reader_offset(&reader), 1u);
+    ASSERT_EQ(br.subOffset, 0u);
+
+    // --- Read 9th Bit (1) - Triggers New Byte Load ---
+    ASSERT_IS_OK(bitreader_takeSingleBit(&br, &bit));
+    ASSERT_EQ(bit, 1u);                     // MSB of 0xFF
+    ASSERT_EQ(br.subOffset, 1u);            // SubOffset advances to 1
+    ASSERT_EQ(reader_offset(&reader), 2u);  // Reader offset advances to 2
+    ASSERT_EQ(br.currentByte, 0xFFu);
 }
