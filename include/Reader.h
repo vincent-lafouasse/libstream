@@ -37,6 +37,11 @@ LibStream_ReadStatus reader_peekSlice(Reader* reader, size_t n, Slice* out);
 LibStream_ReadStatus reader_peekInto(Reader* reader, size_t n, uint8_t* out);
 LibStream_ReadStatus reader_skip(Reader* reader, size_t n);
 
+static inline size_t reader_offset(const Reader* reader)
+{
+    return reader->offset;
+}
+
 LibStream_ReadStatus reader_takeSlice(Reader* reader, size_t n, Slice* out);
 
 LibStream_ReadStatus reader_peekFourCC(Reader* reader, uint8_t* out);
