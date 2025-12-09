@@ -28,11 +28,12 @@ LibStream_ReadStatus bitreader_readBit(BitReader* br, uint32_t* out)
     }
 
     uint8_t bit = getNthBit_BE(br->currentByte, br->subOffset);
-    *out = (bit != 0);
-    if (br->subOffset == 7) {
+
+    br->subOffset++;
+    if (br->subOffset == 8) {
         br->subOffset = 0;
-    } else {
-        br->subOffset += 1;
     }
+
+    *out = (bit != 0);
     return LibStream_ReadStatus_Ok;
 }
