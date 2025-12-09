@@ -39,8 +39,7 @@ target_sources(
          FILES
          include/libstream.h
          include/libstream/Reader.h
-         include/libstream/BitReader.h
-)
+         include/libstream/BitReader.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic
