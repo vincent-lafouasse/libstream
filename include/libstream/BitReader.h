@@ -41,8 +41,6 @@ size_t bitreader_byteAlign(BitReader* br);  // returns n. of bits skipped
 // skipBytes always starts by aligning
 LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes);
 
-// returns the _total_ bit offset
-uint64_t bitreader_getBitOffset(const BitReader* br);
 // returns the n. of bytes consumed from the internal reader
 uint64_t bitreader_getByteOffset(const BitReader* br);
 

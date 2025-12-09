@@ -63,16 +63,6 @@ LibStream_ReadStatus bitreader_skipBytes(BitReader* br, size_t nBytes)
     return reader_skip(br->byteReader, nBytes);
 }
 
-uint64_t bitreader_getBitOffset(const BitReader* br)
-{
-    if (reader_offset(br->byteReader) == 0) {
-        // nothing taken from the internal reader yet
-        return 0;
-    }
-    // at least one byte has been taken
-    return br->subOffset + 8 * (reader_offset(br->byteReader) - 1);
-}
-
 uint64_t bitreader_getByteOffset(const BitReader* br)
 {
     return reader_offset(br->byteReader);
