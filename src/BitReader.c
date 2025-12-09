@@ -23,13 +23,11 @@ BitReader bitreader_init(Reader* reader)
 LibStream_ReadStatus bitreader_readBit(BitReader* br, uint32_t* out)
 {
     if (br->subOffset == 0) {
+        TRY(reader_peekInto(br->byteReader, 1, &br->currentByte));
         TRY(reader_skip(br->byteReader, 1));
     }
 
-    uint8_t byte;
-    TRY(reader_peekInto(br->byteReader, 1, &byte));
-
-    uint8_t bit = getNthBit_BE(byte, br->subOffset);
+    uint8_t bit = getNthBit_BE(br->currentByte, br->subOffset);
     *out = (bit != 0);
     if (br->subOffset == 7) {
         br->subOffset = 0;

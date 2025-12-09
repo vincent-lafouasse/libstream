@@ -13,12 +13,13 @@ extern "C" {
 // A stream wrapper that handles reading non-byte-aligned data
 // The bit reading order is MSB-first (Big-Endian bit order) per the MPEG-1
 // standard (ISO/IEC 11172-3).
+//
+// a sub-offset of 0 means the next byte is across the byte boundary and will trigger a read
 typedef struct BitReader {
     Reader* byteReader;
-    uint8_t offset;
-    size_t
-        subOffset;  // Number of bits already consumed from current_byte (0-7).
-                    // 0: MSB (leftmost) is next; 7: LSB (rightmost) is next.
+    size_t offset;
+    size_t subOffset;  // N. of bits already consumed from current_byte (0-7).
+    uint8_t currentByte;
 } BitReader;
 
 BitReader bitreader_init(Reader* reader);
