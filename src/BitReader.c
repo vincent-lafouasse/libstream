@@ -1,5 +1,7 @@
 #include "libstream/BitReader.h"
-#include "libstream/Reader.h"
+
+#include <assert.h>
+
 
 #define TRY(canFail)                          \
     do {                                      \
@@ -72,9 +74,7 @@ LibStream_ReadStatus bitreader_takeBits(BitReader* br,
                                         size_t nBits,
                                         uint32_t* out)
 {
-    if (nBits > 32) {
-        return LibStream_ReadStatus_TooLarge;
-    }
+    assert(nBits <= 32);
 
     // this implementation is technically inefficient
     // but not enough for me to care

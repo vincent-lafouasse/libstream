@@ -12,7 +12,6 @@ typedef enum {
     LibStream_ReadStatus_Ok,
     LibStream_ReadStatus_ReadFailed,
     LibStream_ReadStatus_UnexpectedEOF,
-    LibStream_ReadStatus_TooLarge,
 } LibStream_ReadStatus;
 
 typedef struct Reader Reader;
