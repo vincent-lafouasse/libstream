@@ -29,6 +29,7 @@ add_library(${PROJECT_NAME})
 target_sources(
   ${PROJECT_NAME}
   PRIVATE src/Reader.c
+  PRIVATE src/BitReader.c
   PUBLIC FILE_SET
          myHeaders
          TYPE
@@ -38,7 +39,7 @@ target_sources(
          FILES
          include/libstream.h
          include/libstream/Reader.h
-         include/libstream/Reader.h
+         include/libstream/BitReader.h
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
