@@ -5,9 +5,7 @@ project(libstream VERSION 0.1.0)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "-Wall -Wextra -pedantic -fdiagnostics-color=always -g3")
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 option(LIBSTREAM_BUILD_TESTS "Build and run tests using CTest" ON)
@@ -40,6 +38,9 @@ target_sources(
          FILES
          include/Reader.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
+
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic
+                                               -fdiagnostics-color=always)
 
 if(LIBSTREAM_BUILD_TESTS)
   include(FetchContent)
