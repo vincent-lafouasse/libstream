@@ -27,6 +27,7 @@ def declare_read_integer(mode, shortType, containerType, size, endian):
     functionName = f"reader_{mode}{shortType}_{endian}"
     print(f"{ERROR_TYPE} {functionName}(Reader* reader, {containerType}* out);")
 
+
 if __name__ == "__main__":
     bitdepths = [16, 32, 64]
     signedness = [("U", "uint"), ("I", "int")]
