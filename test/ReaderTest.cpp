@@ -12,8 +12,9 @@ static void assertSliceEq(const Slice& slice, const std::string& expected)
     ASSERT_EQ(actual, expected);
 }
 
-#define ASSERT_IS_OK(status) ASSERT_EQ(status, ReadStatus_Ok)
-#define ASSERT_IS_EOF(status) ASSERT_EQ(status, ReadStatus_UnexpectedEOF)
+#define ASSERT_IS_OK(status) ASSERT_EQ(status, LibStream_ReadStatus_Ok)
+#define ASSERT_IS_EOF(status) \
+    ASSERT_EQ(status, LibStream_ReadStatus_UnexpectedEOF)
 
 TEST(MockReaderReader, PeekSlice_Basic)
 {
@@ -84,7 +85,7 @@ TEST(MockReaderReader, Skip_Then_Peek)
     ASSERT_IS_OK(reader.peekSlice(&reader, 3, &slice));
     assertSliceEq(slice, "789");
 
-    ReadStatus err = reader.peekSlice(&reader, 4, &slice);
+    LibStream_ReadStatus err = reader.peekSlice(&reader, 4, &slice);
     ASSERT_IS_EOF(err);
 }
 
@@ -107,7 +108,7 @@ TEST(MockReaderReader, EOF_PeekSlice_Exact)
     ASSERT_IS_OK(reader.peekSlice(&reader, 2, &slice));
     assertSliceEq(slice, "hi");
 
-    ReadStatus err = reader.peekSlice(&reader, 3, &slice);
+    LibStream_ReadStatus err = reader.peekSlice(&reader, 3, &slice);
     ASSERT_IS_EOF(err);
 }
 
@@ -120,7 +121,7 @@ TEST(MockReaderReader, PeekSlice_AfterEOFOffset)
     ASSERT_EQ(reader.offset, 3u);
 
     Slice slice;
-    ReadStatus err = reader.peekSlice(&reader, 1, &slice);
+    LibStream_ReadStatus err = reader.peekSlice(&reader, 1, &slice);
     ASSERT_IS_EOF(err);
 }
 
@@ -150,7 +151,7 @@ TEST(MockReaderReader, MixedOperations_Consistency)
     ASSERT_IS_OK(reader.peekSlice(&reader, 2, &slice));
     assertSliceEq(slice, "ij");
 
-    ReadStatus err = reader.peekSlice(&reader, 3, &slice);
+    LibStream_ReadStatus err = reader.peekSlice(&reader, 3, &slice);
     ASSERT_IS_EOF(err);
 }
 
@@ -170,7 +171,7 @@ TEST(MockReaderReader, PeekSlice_SingleByteAdvances)
     }
 
     // now at EOF
-    ReadStatus err = r.peekSlice(&r, 1, &s);
+    LibStream_ReadStatus err = r.peekSlice(&r, 1, &s);
     ASSERT_IS_EOF(err);
 }
 
@@ -185,7 +186,7 @@ TEST(MockReaderReader, OffsetMonotonicity_PeekDoesNotAdvance)
 
         // varying peek sizes
         size_t n = (i % 11);
-        ReadStatus err = r.peekSlice(&r, n, &s);
+        LibStream_ReadStatus err = r.peekSlice(&r, n, &s);
 
         if (n <= 10) {
             if (n <= 10 - before)
@@ -251,7 +252,7 @@ TEST(MockReaderReader, SlidingWindows)
         for (size_t k = 0; k <= 10; k++) {
             size_t remaining = 10 - j;
 
-            ReadStatus err = r.peekSlice(&r, k, &s);
+            LibStream_ReadStatus err = r.peekSlice(&r, k, &s);
 
             if (k <= remaining) {
                 ASSERT_IS_OK(err);
@@ -295,7 +296,7 @@ TEST(MockReaderReader, SkipToLastByte)
     ASSERT_IS_OK(r.peekSlice(&r, 1, &s));
     ASSERT_EQ((char)s.slice[0], '3');
 
-    ReadStatus err = r.peekSlice(&r, 2, &s);
+    LibStream_ReadStatus err = r.peekSlice(&r, 2, &s);
     ASSERT_IS_EOF(err);
 }
 
@@ -305,7 +306,7 @@ TEST(MockReaderReader, LargePeekRequest)
     Reader r = mockReaderInterface(&mem);
 
     Slice s;
-    ReadStatus err = r.peekSlice(&r, 1000, &s);
+    LibStream_ReadStatus err = r.peekSlice(&r, 1000, &s);
     ASSERT_IS_EOF(err);
 }
 
@@ -318,7 +319,7 @@ TEST(MockReaderReader, SkipExhaustively)
     ASSERT_EQ(r.offset, 3u);
 
     for (int i = 0; i < 5; i++) {
-        ReadStatus err = r.skip(&r, 1);
+        LibStream_ReadStatus err = r.skip(&r, 1);
         ASSERT_IS_EOF(err);
     }
 }
@@ -339,7 +340,7 @@ TEST(MockReaderReader, ComplexSkipPattern)
             ASSERT_IS_OK(r.skip(&r, s));
             expectedOffset += s;
         } else {
-            ReadStatus err = r.skip(&r, s);
+            LibStream_ReadStatus err = r.skip(&r, s);
             ASSERT_IS_EOF(err);
         }
 

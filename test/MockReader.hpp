@@ -16,10 +16,10 @@ class MockReader {
     MockReader(const std::vector<Byte>& v);
     MockReader(const std::string& s);
 
-    ReadStatus peekSlice(size_t size, Slice* out) const;
-    ReadStatus skip(size_t size);
+    LibStream_ReadStatus peekSlice(size_t size, Slice* out) const;
+    LibStream_ReadStatus skip(size_t size);
 };
 
-ReadStatus mockReaderPeekSlice(Reader* reader, size_t n, Slice* out);
-ReadStatus mockReaderSkip(Reader* reader, size_t n);
+LibStream_ReadStatus mockReaderPeekSlice(Reader* reader, size_t n, Slice* out);
+LibStream_ReadStatus mockReaderSkip(Reader* reader, size_t n);
 Reader mockReaderInterface(MockReader* memoryReader);

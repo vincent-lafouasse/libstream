@@ -12,43 +12,43 @@ MockReader::MockReader(const std::string& s) : data(), pos(0)
     }
 }
 
-ReadStatus MockReader::peekSlice(size_t size, Slice* out) const
+LibStream_ReadStatus MockReader::peekSlice(size_t size, Slice* out) const
 {
     if (this->pos + size > this->data.size()) {
-        return ReadStatus_UnexpectedEOF;
+        return LibStream_ReadStatus_UnexpectedEOF;
     }
 
     *out = {.slice = this->data.data() + this->pos, .len = size};
-    return ReadStatus_Ok;
+    return LibStream_ReadStatus_Ok;
 }
 
-ReadStatus MockReader::skip(size_t size)
+LibStream_ReadStatus MockReader::skip(size_t size)
 {
     if (this->pos + size > this->data.size()) {
-        return ReadStatus_UnexpectedEOF;
+        return LibStream_ReadStatus_UnexpectedEOF;
     } else {
         this->pos += size;
-        return ReadStatus_Ok;
+        return LibStream_ReadStatus_Ok;
     }
 }
 
-ReadStatus mockReaderPeekSlice(Reader* reader, size_t n, Slice* out)
+LibStream_ReadStatus mockReaderPeekSlice(Reader* reader, size_t n, Slice* out)
 {
     MockReader* mockReader = static_cast<MockReader*>(reader->ctx);
 
     return mockReader->peekSlice(n, out);
 }
 
-ReadStatus mockReaderSkip(Reader* reader, size_t n)
+LibStream_ReadStatus mockReaderSkip(Reader* reader, size_t n)
 {
     MockReader* mockReader = static_cast<MockReader*>(reader->ctx);
 
-    ReadStatus err = mockReader->skip(n);
-    if (err != ReadStatus_Ok) {
+    LibStream_ReadStatus err = mockReader->skip(n);
+    if (err != LibStream_ReadStatus_Ok) {
         return err;
     } else {
         reader->offset += n;
-        return ReadStatus_Ok;
+        return LibStream_ReadStatus_Ok;
     }
 }
 
