@@ -67,3 +67,41 @@ uint64_t bitreader_getByteOffset(const BitReader* br)
 {
     return reader_offset(br->byteReader);
 }
+
+LibStream_ReadStatus bitreader_takeBits(BitReader* br,
+                                        size_t nBits,
+                                        uint32_t* out)
+{
+    uint32_t bit;
+    *out = 0;
+
+    // empty out the buffer
+    while (nBits && br->subOffset) {
+        TRY(bitreader_takeSingleBit(br, &bit));
+        *out = (*out << 1) | bit;
+        nBits--;
+    }
+    if (nBits == 0) {
+        return LibStream_ReadStatus_Ok;
+    }
+
+    // read bytes at a time while possible
+    while (nBits > 8) {
+        Slice byte;
+        TRY(reader_takeSlice(br->byteReader, 1, &byte));
+        *out = (*out << 8) | *byte.slice;
+        nBits -= 8;
+    }
+    if (nBits == 0) {
+        return LibStream_ReadStatus_Ok;
+    }
+
+    // remainder
+    while (nBits) {
+        TRY(bitreader_takeSingleBit(br, &bit));
+        *out = (*out << 1) | bit;
+        nBits--;
+    }
+
+    return LibStream_ReadStatus_Ok;
+}
