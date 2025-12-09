@@ -35,6 +35,7 @@ TEST(BitReader, IsByteAligned_Correctness)
     // Consume 1 bit -> Unaligned (subOffset = 1)
     bitreader_takeSingleBit(&br, &bit);
     ASSERT_FALSE(bitreader_isByteAligned(&br));
+    ASSERT_EQ(br.subOffset, 1u);
 
     // Consume 7 more bits (total 8) -> Aligned (subOffset = 0)
     for (int i = 0; i < 7; ++i) {
