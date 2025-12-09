@@ -143,3 +143,30 @@ TEST(BitReader, ByteAlign_AlreadyAligned)
     ASSERT_EQ(br.subOffset, 0u);
     ASSERT_EQ(reader_offset(&reader), 0u);
 }
+
+TEST(BitReader, SkipBytes_UnalignedStart)
+{
+    MockReader mockReader("\xAA\xBB\xCC\xDD");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t bit;
+
+    // Read 2 bits (subOffset=2). Reader offset=1.
+    bitreader_takeSingleBit(&br, &bit);
+    bitreader_takeSingleBit(&br, &bit);
+    ASSERT_EQ(br.subOffset, 2u);
+    ASSERT_EQ(reader_offset(&reader), 1u);  // Byte 0xAA taken
+
+    // skip 2 bytes (0xBB and 0xCC).
+    // this MUST: 1) align (skip 6 bits of 0xAA). 2) reader_skip(2).
+    ASSERT_IS_OK(bitreader_skipBytes(&br, 2));
+
+    ASSERT_EQ(br.subOffset, 0u);  // Must be aligned
+    ASSERT_EQ(reader_offset(&reader), 3u);
+
+    // verify next read starts on 0xDD (Byte 3)
+    // the next takeSingleBit will load 0xDD (MSB=1)
+    ASSERT_IS_OK(bitreader_takeSingleBit(&br, &bit));
+    ASSERT_EQ(bit, 1u);
+    ASSERT_EQ(reader_offset(&reader), 4u);  // 4th byte has been read
+}
