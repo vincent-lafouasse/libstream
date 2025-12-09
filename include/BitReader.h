@@ -14,7 +14,8 @@ extern "C" {
 // The bit reading order is MSB-first (Big-Endian bit order) per the MPEG-1
 // standard (ISO/IEC 11172-3).
 //
-// a sub-offset of 0 means the next byte is across the byte boundary and will trigger a read
+// a sub-offset of 0 means the next byte is across the byte boundary and will
+// trigger a read
 typedef struct BitReader {
     Reader* byteReader;
     size_t subOffset;  // N. of bits already consumed from current_byte (0-7).
