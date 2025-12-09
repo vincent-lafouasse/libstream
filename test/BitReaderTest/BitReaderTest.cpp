@@ -107,3 +107,39 @@ TEST(BitReader, TakeSingleBit_LoadNextByte)
     ASSERT_EQ(reader_offset(&reader), 2u);  // Reader offset advances to 2
     ASSERT_EQ(br.currentByte, 0xFFu);
 }
+
+TEST(BitReader, ByteAlign_UnalignedState)
+{
+    MockReader mockReader("\xAA");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+    uint32_t bit;
+
+    for (int i = 0; i < 3; ++i) {
+        bitreader_takeSingleBit(&br, &bit);
+    }
+
+    // Initial state for align
+    ASSERT_EQ(br.subOffset, 3u);
+    ASSERT_EQ(reader_offset(&reader), 1u);
+
+    size_t skipped = bitreader_byteAlign(&br);
+
+    ASSERT_EQ(skipped, 5u);  // 8 - 3 = 5 bits skipped
+    ASSERT_EQ(br.subOffset, 0u);
+    ASSERT_EQ(reader_offset(&reader), 1u);  // no read has been triggered
+    ASSERT_TRUE(bitreader_isByteAligned(&br));
+}
+
+TEST(BitReader, ByteAlign_AlreadyAligned)
+{
+    MockReader mockReader("A");
+    Reader reader = mockReaderInterface(&mockReader);
+    BitReader br = bitreader_init(&reader);
+
+    size_t skipped = bitreader_byteAlign(&br);
+
+    ASSERT_EQ(skipped, 0u);
+    ASSERT_EQ(br.subOffset, 0u);
+    ASSERT_EQ(reader_offset(&reader), 0u);
+}
