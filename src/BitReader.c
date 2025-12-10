@@ -2,7 +2,6 @@
 
 #include <assert.h>
 
-
 #define TRY(canFail)                          \
     do {                                      \
         LibStream_ReadStatus err = canFail;   \
