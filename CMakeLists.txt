@@ -10,20 +10,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 option(LIBSTREAM_BUILD_TESTS "Build and run tests using CTest" ON)
 
-if(NOT TARGET bitcast)
-  message(
-    STATUS "---- No libbitcast here or in parent project: fetching libbitcast")
-
-  include(FetchContent)
-  FetchContent_Declare(
-    bitcast_dep
-    GIT_REPOSITORY https://github.com/vincent-lafouasse/libbitcast.git
-    GIT_TAG "main"
-    GIT_SHALLOW 1)
-  FetchContent_MakeAvailable(bitcast_dep)
-else()
-  message(STATUS "---- Found libbitcast in parent project: no fetching")
-endif()
+include(FetchContent)
+FetchContent_Declare(
+  bitcast_dep
+  GIT_REPOSITORY https://github.com/vincent-lafouasse/libbitcast.git
+  GIT_TAG 559fbbedb42bf961eaf8680d2f82dd0a804aa4a5)
+FetchContent_MakeAvailable(bitcast_dep)
 
 add_library(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE src/Reader.c src/BitReader.c)
