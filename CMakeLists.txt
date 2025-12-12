@@ -26,20 +26,10 @@ else()
 endif()
 
 add_library(${PROJECT_NAME})
-target_sources(
-  ${PROJECT_NAME}
-  PRIVATE src/Reader.c
-  PRIVATE src/BitReader.c
-  PUBLIC FILE_SET
-         myHeaders
-         TYPE
-         HEADERS
-         BASE_DIRS
-         include
-         FILES
-         include/libstream.h
-         include/libstream/Reader.h
-         include/libstream/BitReader.h)
+target_sources(${PROJECT_NAME} PRIVATE src/Reader.c src/BitReader.c)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ./include)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE bitcast)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic
