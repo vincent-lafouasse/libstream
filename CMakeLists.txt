@@ -16,11 +16,11 @@ if(NOT TARGET bitcast)
 
   include(FetchContent)
   FetchContent_Declare(
-    bitcast_dep
+    bitcast
     GIT_REPOSITORY https://github.com/vincent-lafouasse/libbitcast.git
     GIT_TAG "main"
     GIT_SHALLOW 1)
-  FetchContent_MakeAvailable(bitcast_dep)
+  FetchContent_MakeAvailable(bitcast)
 else()
   message(STATUS "---- Found libbitcast in parent project: no fetching")
 endif()
